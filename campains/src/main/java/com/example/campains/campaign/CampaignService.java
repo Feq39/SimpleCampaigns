@@ -105,9 +105,9 @@ public class CampaignService {
         return result;
     }
 
-
+    @Transactional
     public void updateCampaign(String sellerName,String productName,String campaignName,UpdateCampaignRequest campaignUpdateInfo) {
-        SellerEntity seller = getSellerEntityOrThrow(sellerName,true);
+        SellerEntity seller = getSellerEntityOrThrow(sellerName);
         ProductEntity product = getProductEntityOrThrow(productName,seller);
         CampaignEntity campaign = getCampaignEntityOrThrow(campaignName,product);
         if(campaignRepository.findByNameAndProduct(campaignUpdateInfo.name(),product).isPresent()) {
@@ -161,13 +161,7 @@ public class CampaignService {
         }
         return sellerOpt.get();
     }
-    private SellerEntity getSellerEntityOrThrow(String sellerName, Boolean withLock) {
-        Optional<SellerEntity> sellerOpt = sellersRepository.findByName(sellerName);
-        if(sellerOpt.isEmpty()) {
-            throw new ResourceNotFoundException("Seller with the name " + sellerName + " does not exist");
-        }
-        return sellerOpt.get();
-    }
+
 
 
     private ProductEntity getProductEntityOrThrow(String productName,SellerEntity seller) {
