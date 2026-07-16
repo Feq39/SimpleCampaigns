@@ -96,7 +96,7 @@
                         checkConstraint="status IN ('ON', 'OFF')"/>
             </column>
             <column name="town_id" type="BIGINT">
-                <constraints nullable="true"
+                <constraints nullable="false"
                              foreignKeyName="fk_campaign_town"
                              references="towns(id)"/>
             </column>

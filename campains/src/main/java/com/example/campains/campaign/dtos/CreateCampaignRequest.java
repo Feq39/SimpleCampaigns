@@ -8,13 +8,13 @@ import java.util.Set;
 
 public record CreateCampaignRequest(
         @NotBlank
+        @Size(max = 255)
         String name,
-
-        @NotEmpty
-        Set<Long> keywordIds,
+        @NotNull
+        Set<@NotBlank String> keywords,
 
         @NotNull
-        @DecimalMin(value = "0.01")
+        @DecimalMin("0.01")
         BigDecimal bidAmount,
 
         @NotNull
@@ -24,10 +24,11 @@ public record CreateCampaignRequest(
         @NotNull
         CampaignStatus status,
 
-        Long townId,
+        @Size(max = 255)
+        @NotNull
+        String town,
 
         @NotNull
         @Positive
         Integer radiusKm
-) {
-}
+) {}

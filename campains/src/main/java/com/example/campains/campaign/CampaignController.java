@@ -1,12 +1,12 @@
 package com.example.campains.campaign;
 
 import com.example.campains.campaign.dtos.CampaignDto;
+import com.example.campains.campaign.dtos.CreateCampaignRequest;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/campaigns")
@@ -16,7 +16,7 @@ public class CampaignController {
     public CampaignController(CampaignService campaignService) {
         this.campaignService = campaignService;
     }
-    @GetMapping("/{seller_name}/{product_name}/{campaign_name")
+    @GetMapping("/{seller_name}/{product_name}/{campaign_name}")
     public CampaignDto getCampaignInfo(
             @PathVariable(name = "seller_name")
             @NotBlank
@@ -32,5 +32,14 @@ public class CampaignController {
             String campaignName
             ) {
         return campaignService.getCampaign(campaignName,sellerName,productName);
+    }
+    @PostMapping("/{sellerName}/{productName}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void createCampaign(
+            @PathVariable @NotBlank @Length(max = 64)String sellerName,
+            @PathVariable @NotBlank @Length(max = 64)String productName,
+            @Valid @RequestBody CreateCampaignRequest request
+    ) {
+        campaignService.createCampaign(sellerName,productName,request);
     }
 }
