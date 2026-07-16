@@ -105,6 +105,12 @@ public class CampaignService {
         return result;
     }
 
+    @Transactional(readOnly = true)
+    public List<String> getAllCampaignNamesForProduct(String sellerName,String productName) {
+        SellerEntity seller = getSellerEntityOrThrow(sellerName);
+        ProductEntity product = getProductEntityOrThrow(productName,seller);
+        return campaignRepository.findAllByProduct(product).stream().map(CampaignEntity::getName).toList();
+    }
     @Transactional
     public void updateCampaign(String sellerName,String productName,String campaignName,UpdateCampaignRequest campaignUpdateInfo) {
         SellerEntity seller = getSellerEntityOrThrow(sellerName);

@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/v1/campaigns")
 @Validated
@@ -58,7 +60,7 @@ public class CampaignController {
         );
     }
     @PutMapping("/{sellerName}/{productName}/{campaignName}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     public void updateCampaign(
             @PathVariable @NotBlank @Length(max = 64) String sellerName,
             @PathVariable @NotBlank @Length(max = 64) String productName,
@@ -72,4 +74,13 @@ public class CampaignController {
                 request
         );
     }
+    @GetMapping("/{sellerName}/{productName}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<String> getCampaignNamesForProduct(
+            @PathVariable @NotBlank @Length(max = 64)String sellerName,
+            @PathVariable @NotBlank @Length(max = 64)String productName
+    ) {
+        return campaignService.getAllCampaignNamesForProduct(sellerName, productName);
+    }
+
 }

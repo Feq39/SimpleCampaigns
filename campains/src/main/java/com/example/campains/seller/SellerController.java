@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/v1/sellers")
 @Validated
@@ -20,5 +22,9 @@ public class SellerController {
     @GetMapping("{seller_name}")
     public SellerDto getSeller(@PathVariable(name="seller_name") @NotBlank @Length(max = 64) String sellerName) {
         return sellerService.getSellerInfo(sellerName);
+    }
+    @GetMapping
+    public List<SellerDto> getSellers() {
+        return sellerService.getAllSellers();
     }
 }

@@ -5,6 +5,7 @@ import com.example.campains.product.ProductDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -28,5 +29,13 @@ public class SellerService {
                 seller.getEmeraldAccount().getFunds(),
                 seller.getProducts().stream().map(p -> new ProductDto(p.getName())).toList()
                 );
+    }
+
+    public List<SellerDto> getAllSellers() {
+        return sellersRepository.findAll().stream().map(s -> new SellerDto(
+                s.getName(),
+                s.getEmeraldAccount().getFunds(),
+                s.getProducts().stream().map(p -> new ProductDto(s.getName())).toList()
+                )).toList();
     }
 }

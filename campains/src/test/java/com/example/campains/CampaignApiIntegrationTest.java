@@ -65,7 +65,7 @@ class CampaignApiIntegrationTest {
                 )
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(campaignRequest("updated-sale", "250.00")))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
 
         mockMvc.perform(get(
                         "/api/v1/campaigns/{sellerName}/{productName}/{campaignName}",
