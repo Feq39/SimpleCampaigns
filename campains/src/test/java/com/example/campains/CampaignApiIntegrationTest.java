@@ -160,6 +160,16 @@ class CampaignApiIntegrationTest {
                         .param("prefix", " "))
                 .andExpect(status().isBadRequest());
     }
+
+
+    @Test
+    void shouldReturnAllSellers() throws Exception {
+        mockMvc.perform(get("/api/v1/sellers"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[*].name", hasItems(SELLER)))
+                .andExpect(jsonPath("$[*].products[*].name", hasItems(PRODUCT)))
+                .andExpect(jsonPath("$..id").doesNotExist());
+    }
     private ResultActions createCampaign(
             String name,
             String fund

@@ -23,7 +23,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 HttpStatus.NOT_FOUND,
                 "Resource not found",
                 "RESOURCE_NOT_FOUND",
-                publicMessage(exception, "Requested resource was not found."),
+                "Requested resource was not found.",
                 request
         );
     }
@@ -37,7 +37,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 HttpStatus.CONFLICT,
                 "Resource already exists",
                 "RESOURCE_ALREADY_EXISTS",
-                publicMessage(exception, "The requested resource already exists."),
+                "The requested resource already exists.",
                 request
         );
     }
@@ -51,11 +51,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 HttpStatus.CONFLICT,
                 "Insufficient funds",
                 "INSUFFICIENT_FUNDS",
-                publicMessage(exception, "There are not enough funds to complete this operation."),
+                "There are not enough funds to complete this operation.",
                 request
         );
     }
-
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Object> handleDataIntegrityViolation(
@@ -69,6 +68,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 "Data conflict",
                 "DATA_INTEGRITY_CONFLICT",
                 "The request conflicts with the current data state.",
+                request
+        );
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Object> handleConstraintViolationException(
+            ConstraintViolationException exception,
+            WebRequest request
+    ) {
+        return createProblemResponse(
+                HttpStatus.BAD_REQUEST,
+                "Validation failed",
+                "VALIDATION_ERROR",
+                "One or more request parameters are invalid.",
                 request
         );
     }
@@ -88,28 +101,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 request
         );
     }
-
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<Object> handleConstraintViolationException(
-            ConstraintViolationException exception,
-            WebRequest request
-    ) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.BAD_REQUEST,
-                "One or more request parameters are invalid."
-        );
-
-        problemDetail.setTitle("Validation failed");
-        problemDetail.setProperty("code", "VALIDATION_ERROR");
-
-        return createResponseEntity(
-                problemDetail,
-                new HttpHeaders(),
-                HttpStatus.BAD_REQUEST,
-                request
-        );
-    }
-
 
     private ResponseEntity<Object> createProblemResponse(
             HttpStatus status,
