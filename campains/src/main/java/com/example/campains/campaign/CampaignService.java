@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -57,7 +58,7 @@ public class CampaignService {
     }
 
     @Transactional
-    public void createCampaign(String sellerName, String productName, UpdateCampaignRequest campaignInfo) {
+    public CampaignDto createCampaign(String sellerName, String productName, UpdateCampaignRequest campaignInfo) {
         SellerEntity seller = getSellerEntityOrThrow(sellerName);
         ProductEntity product = getProductEntityOrThrow(productName,seller);
         if (product.getCampaigns().stream().anyMatch(e->e.getName().equals(campaignInfo.name()))) {
@@ -80,13 +81,13 @@ public class CampaignService {
 
         sellersAccount.setFunds(sellersAccount.getFunds().subtract(newCampaign.getFund()));
         emeraldAccountsRepository.save(sellersAccount);
-
+        return CampaignService.convertCampaignEntityToDto(newCampaign);
     }
     @Transactional
-    public void deleteCampaign(String sellerName,String productName,String campaingName) {
+    public void deleteCampaign(String sellerName,String productName,String campaignName) {
         SellerEntity seller = getSellerEntityOrThrow(sellerName);
         ProductEntity product = getProductEntityOrThrow(productName,seller);
-        CampaignEntity campaign = getCampaignEntityOrThrow(campaingName,product);
+        CampaignEntity campaign = getCampaignEntityOrThrow(campaignName,product);
         EmeraldAccountEntity sellersAccount = seller.getEmeraldAccount();
         sellersAccount.setFunds(sellersAccount.getFunds().add(campaign.getFund()));
         emeraldAccountsRepository.save(sellersAccount);
@@ -103,6 +104,49 @@ public class CampaignService {
         }
         return result;
     }
+
+
+    public void updateCampaign(String sellerName,String productName,String campaignName,UpdateCampaignRequest campaignUpdateInfo) {
+        SellerEntity seller = getSellerEntityOrThrow(sellerName,true);
+        ProductEntity product = getProductEntityOrThrow(productName,seller);
+        CampaignEntity campaign = getCampaignEntityOrThrow(campaignName,product);
+        if(campaignRepository.findByNameAndProduct(campaignUpdateInfo.name(),product).isPresent()) {
+            throw new ResourceAlreadyExistsException("Name of the campain " + campaignUpdateInfo.name() +" is taken");
+        }
+        TownEntity town =
+                getTownEntityOrThrow(campaignUpdateInfo.town());
+        Set<KeywordEntity> keywords =
+                getMatchingKeywordEntitiesOrThrow(
+                        campaignUpdateInfo.keywords()
+                );
+        EmeraldAccountEntity account =
+                seller.getEmeraldAccount();
+        BigDecimal availableFunds =
+                account.getFunds()
+                        .add(campaign.getFund());
+
+        if (availableFunds.compareTo(campaignUpdateInfo.fund()) < 0) {
+            throw new InsufficientFundsException("not enough funds to add to campaign fund");
+        }
+        CampaignEntity newCampaign = new CampaignEntity();
+        newCampaign.setName(campaignUpdateInfo.name());
+        newCampaign.setStatus(campaignUpdateInfo.status());
+        newCampaign.setRadiusKm(campaignUpdateInfo.radiusKm());
+        newCampaign.setBidAmount(campaignUpdateInfo.bidAmount());
+        newCampaign.setProduct(product);
+        newCampaign.setTown(getTownEntityOrThrow(campaignUpdateInfo.town()));
+        newCampaign.setKeywords(getMatchingKeywordEntitiesOrThrow(campaignUpdateInfo.keywords()));
+        newCampaign.setFund(campaignUpdateInfo.fund());
+        campaignRepository.delete(campaign);
+        campaignRepository.flush();
+        campaignRepository.save(newCampaign);
+
+        account.setFunds(
+                availableFunds.subtract(campaignUpdateInfo.fund())
+        );
+        emeraldAccountsRepository.save(account);
+
+    }
     private TownEntity getTownEntityOrThrow(String townName) {
         Optional<TownEntity> townOpt =  townRepository.findByName(townName);
         if(townOpt.isEmpty()) {
@@ -111,6 +155,13 @@ public class CampaignService {
         return townOpt.get();
     }
     private SellerEntity getSellerEntityOrThrow(String sellerName) {
+        Optional<SellerEntity> sellerOpt = sellersRepository.findByName(sellerName);
+        if(sellerOpt.isEmpty()) {
+            throw new ResourceNotFoundException("Seller with the name " + sellerName + " does not exist");
+        }
+        return sellerOpt.get();
+    }
+    private SellerEntity getSellerEntityOrThrow(String sellerName, Boolean withLock) {
         Optional<SellerEntity> sellerOpt = sellersRepository.findByName(sellerName);
         if(sellerOpt.isEmpty()) {
             throw new ResourceNotFoundException("Seller with the name " + sellerName + " does not exist");

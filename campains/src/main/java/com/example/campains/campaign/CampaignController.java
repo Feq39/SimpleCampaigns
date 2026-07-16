@@ -35,12 +35,12 @@ public class CampaignController {
     }
     @PostMapping("/{sellerName}/{productName}")
     @ResponseStatus(HttpStatus.CREATED)
-    public void createCampaign(
+    public CampaignDto createCampaign(
             @PathVariable @NotBlank @Length(max = 64)String sellerName,
             @PathVariable @NotBlank @Length(max = 64)String productName,
             @Valid @RequestBody UpdateCampaignRequest request
     ) {
-        campaignService.createCampaign(sellerName,productName,request);
+        return campaignService.createCampaign(sellerName,productName,request);
     }
     @DeleteMapping("/{sellerName}/{productName}/{campaignName}")
     @ResponseStatus(HttpStatus.OK)
@@ -53,6 +53,21 @@ public class CampaignController {
                 sellerName,
                 productName,
                 campaignName
+        );
+    }
+    @PutMapping("/{sellerName}/{productName}/{campaignName}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateCampaign(
+            @PathVariable @NotBlank @Length(max = 64) String sellerName,
+            @PathVariable @NotBlank @Length(max = 64) String productName,
+            @PathVariable @NotBlank @Length(max = 64) String campaignName,
+            @Valid @RequestBody UpdateCampaignRequest request
+    ) {
+        campaignService.updateCampaign(
+                sellerName,
+                productName,
+                campaignName,
+                request
         );
     }
 }
