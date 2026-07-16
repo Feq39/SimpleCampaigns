@@ -1,7 +1,8 @@
 package com.example.campains.campaign;
 
 import com.example.campains.campaign.dtos.CampaignDto;
-import com.example.campains.campaign.dtos.CreateCampaignRequest;
+import com.example.campains.campaign.dtos.UpdateCampaignRequest;
+import com.example.campains.common.InsufficientFundsException;
 import com.example.campains.common.ResourceAlreadyExistsException;
 import com.example.campains.common.ResourceNotFoundException;
 import com.example.campains.keyword.KeywordDto;
@@ -56,7 +57,7 @@ public class CampaignService {
     }
 
     @Transactional
-    public void createCampaign(String sellerName, String productName, CreateCampaignRequest campaignInfo) {
+    public void createCampaign(String sellerName, String productName, UpdateCampaignRequest campaignInfo) {
         SellerEntity seller = getSellerEntityOrThrow(sellerName);
         ProductEntity product = getProductEntityOrThrow(productName,seller);
         if (product.getCampaigns().stream().anyMatch(e->e.getName().equals(campaignInfo.name()))) {
@@ -70,13 +71,27 @@ public class CampaignService {
         newCampaign.setProduct(product);
         newCampaign.setTown(getTownEntityOrThrow(campaignInfo.town()));
         newCampaign.setKeywords(getMatchingKeywordEntitiesOrThrow(campaignInfo.keywords()));
-        campaignRepository.save(newCampaign);
+        newCampaign.setFund(campaignInfo.fund());
         EmeraldAccountEntity sellersAccount = seller.getEmeraldAccount();
+        if (sellersAccount.getFunds().compareTo(newCampaign.getFund()) < 0) {
+            throw new InsufficientFundsException("Not enough funds to create campaign " + campaignInfo.name());
+        }
+        campaignRepository.save(newCampaign);
+
         sellersAccount.setFunds(sellersAccount.getFunds().subtract(newCampaign.getFund()));
         emeraldAccountsRepository.save(sellersAccount);
 
     }
-
+    @Transactional
+    public void deleteCampaign(String sellerName,String productName,String campaingName) {
+        SellerEntity seller = getSellerEntityOrThrow(sellerName);
+        ProductEntity product = getProductEntityOrThrow(productName,seller);
+        CampaignEntity campaign = getCampaignEntityOrThrow(campaingName,product);
+        EmeraldAccountEntity sellersAccount = seller.getEmeraldAccount();
+        sellersAccount.setFunds(sellersAccount.getFunds().add(campaign.getFund()));
+        emeraldAccountsRepository.save(sellersAccount);
+        campaignRepository.delete(campaign);
+    }
     private Set<KeywordEntity> getMatchingKeywordEntitiesOrThrow(Set<String> keywordNames) {
         Set<KeywordEntity> result = new HashSet<>();
         for(String k : keywordNames) {

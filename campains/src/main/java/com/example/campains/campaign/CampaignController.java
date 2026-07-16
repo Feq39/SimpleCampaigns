@@ -1,7 +1,7 @@
 package com.example.campains.campaign;
 
 import com.example.campains.campaign.dtos.CampaignDto;
-import com.example.campains.campaign.dtos.CreateCampaignRequest;
+import com.example.campains.campaign.dtos.UpdateCampaignRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
@@ -38,8 +38,21 @@ public class CampaignController {
     public void createCampaign(
             @PathVariable @NotBlank @Length(max = 64)String sellerName,
             @PathVariable @NotBlank @Length(max = 64)String productName,
-            @Valid @RequestBody CreateCampaignRequest request
+            @Valid @RequestBody UpdateCampaignRequest request
     ) {
         campaignService.createCampaign(sellerName,productName,request);
+    }
+    @DeleteMapping("/{sellerName}/{productName}/{campaignName}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteCampaign(
+            @PathVariable String sellerName,
+            @PathVariable String productName,
+            @PathVariable String campaignName
+    ) {
+        campaignService.deleteCampaign(
+                sellerName,
+                productName,
+                campaignName
+        );
     }
 }

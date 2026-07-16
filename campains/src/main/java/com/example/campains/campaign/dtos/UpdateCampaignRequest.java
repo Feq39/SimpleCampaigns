@@ -6,11 +6,11 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.util.Set;
 
-public record CreateCampaignRequest(
+public record UpdateCampaignRequest(
         @NotBlank
         @Size(max = 255)
         String name,
-        @NotNull
+        @NotEmpty
         Set<@NotBlank String> keywords,
 
         @NotNull
