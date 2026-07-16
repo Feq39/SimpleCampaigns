@@ -10,7 +10,7 @@ public class KeywordEntity {
     @Column(name = "id")
     private long id;
 
-    @Column(name = "value")
+    @Column(name = "keyword_value")
     private String value;
 
     public long getId() {

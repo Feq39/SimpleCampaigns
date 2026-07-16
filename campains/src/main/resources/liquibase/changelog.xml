@@ -63,7 +63,7 @@
                 <constraints primaryKey="true"
                              nullable="false"/>
             </column>
-            <column name="value" type="VARCHAR(255)">
+            <column name="keyword_value" type="VARCHAR(255)">
                 <constraints nullable="false"
                              unique="true"/>
             </column>
@@ -193,43 +193,43 @@
         </insert>
 
         <insert tableName="keywords">
-            <column name="value" value="electronics"/>
+            <column name="keyword_value" value="electronics"/>
         </insert>
 
         <insert tableName="keywords">
-            <column name="value" value="fashion"/>
+            <column name="keyword_value" value="fashion"/>
         </insert>
 
         <insert tableName="keywords">
-            <column name="value" value="home"/>
+            <column name="keyword_value" value="home"/>
         </insert>
 
         <insert tableName="keywords">
-            <column name="value" value="sports"/>
+            <column name="keyword_value" value="sports"/>
         </insert>
 
         <insert tableName="keywords">
-            <column name="value" value="automotive"/>
+            <column name="keyword_value" value="automotive"/>
         </insert>
 
         <insert tableName="keywords">
-            <column name="value" value="garden"/>
+            <column name="keyword_value" value="garden"/>
         </insert>
 
         <insert tableName="keywords">
-            <column name="value" value="beauty"/>
+            <column name="keyword_value" value="beauty"/>
         </insert>
 
         <insert tableName="keywords">
-            <column name="value" value="books"/>
+            <column name="keyword_value" value="books"/>
         </insert>
 
         <insert tableName="keywords">
-            <column name="value" value="toys"/>
+            <column name="keyword_value" value="toys"/>
         </insert>
 
         <insert tableName="keywords">
-            <column name="value" value="sale"/>
+            <column name="keyword_value" value="sale"/>
         </insert>
     </changeSet>
 
