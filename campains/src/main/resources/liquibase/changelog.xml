@@ -76,7 +76,7 @@
             </column>
             <column name="product_id" type="BIGINT">
                 <constraints nullable="false"
-                             unique="true"
+                             unique="false"
                              uniqueConstraintName="uq_campaign_product"
                              foreignKeyName="fk_campaign_product"
                              references="products(id)"/>
