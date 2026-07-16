@@ -35,7 +35,7 @@ public class SellerService {
         return sellersRepository.findAll().stream().map(s -> new SellerDto(
                 s.getName(),
                 s.getEmeraldAccount().getFunds(),
-                s.getProducts().stream().map(p -> new ProductDto(s.getName())).toList()
+                s.getProducts().stream().map(p -> new ProductDto(p.getName())).toList()
                 )).toList();
     }
 }
