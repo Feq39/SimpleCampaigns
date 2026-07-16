@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1-create-database" author="konrad">
+
+        <createTable tableName="sellers">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="emerald_accounts">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"
+                             nullable="false"/>
+            </column>
+            <column name="seller_id" type="BIGINT">
+                <constraints nullable="false"
+                             unique="true"
+                             foreignKeyName="fk_emerald_account_seller"
+                             references="sellers(id)"/>
+            </column>
+            <column name="funds" type="DECIMAL(19,2)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="products">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"
+                             nullable="false"/>
+            </column>
+            <column name="seller_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="fk_product_seller"
+                             references="sellers(id)"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false" unique="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="towns">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"
+                             nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"
+                             unique="true"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="keywords">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"
+                             nullable="false"/>
+            </column>
+            <column name="value" type="VARCHAR(255)">
+                <constraints nullable="false"
+                             unique="true"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="campaigns">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"
+                             nullable="false"/>
+            </column>
+            <column name="product_id" type="BIGINT">
+                <constraints nullable="false"
+                             unique="true"
+                             uniqueConstraintName="uq_campaign_product"
+                             foreignKeyName="fk_campaign_product"
+                             references="products(id)"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bid_amount" type="DECIMAL(19,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fund" type="DECIMAL(19,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(10)">
+                <constraints
+                        nullable="false"
+                        checkConstraint="status IN ('ON', 'OFF')"/>
+            </column>
+            <column name="town_id" type="BIGINT">
+                <constraints nullable="true"
+                             foreignKeyName="fk_campaign_town"
+                             references="towns(id)"/>
+            </column>
+            <column name="radius_km" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="campaign_keyword">
+            <column name="campaign_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="fk_campaign_keyword_campaign"
+                             references="campaigns(id)"/>
+            </column>
+
+            <column name="keyword_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="fk_campaign_keyword_keyword"
+                             references="keywords(id)"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey
+                tableName="campaign_keyword"
+                columnNames="campaign_id, keyword_id"
+                constraintName="pk_campaign_keyword"/>
+
+    </changeSet>
+
+    <changeSet id="2-prepopulation" author="konrad">
+
+        <insert tableName="sellers">
+            <column name="name" value="seller_one"/>
+        </insert>
+
+        <insert tableName="sellers">
+            <column name="name" value="seller_two"/>
+        </insert>
+
+        <insert tableName="emerald_accounts">
+            <column name="seller_id"
+                    valueComputed="(SELECT id FROM sellers WHERE name = 'seller_one')"/>
+            <column name="funds" valueNumeric="1000.00"/>
+        </insert>
+
+        <insert tableName="emerald_accounts">
+            <column name="seller_id"
+                    valueComputed="(SELECT id FROM sellers WHERE name = 'seller_two')"/>
+            <column name="funds" valueNumeric="750.00"/>
+        </insert>
+
+        <insert tableName="products">
+            <column name="seller_id"
+                    valueComputed="(SELECT id FROM sellers WHERE name = 'seller_one')"/>
+            <column name="name" value="Gaming Laptop"/>
+        </insert>
+
+        <insert tableName="products">
+            <column name="seller_id"
+                    valueComputed="(SELECT id FROM sellers WHERE name = 'seller_one')"/>
+            <column name="name" value="Wireless Headphones"/>
+        </insert>
+
+        <insert tableName="products">
+            <column name="seller_id"
+                    valueComputed="(SELECT id FROM sellers WHERE name = 'seller_two')"/>
+            <column name="name" value="Running Shoes"/>
+        </insert>
+
+        <insert tableName="products">
+            <column name="seller_id"
+                    valueComputed="(SELECT id FROM sellers WHERE name = 'seller_two')"/>
+            <column name="name" value="Smart Watch"/>
+        </insert>
+
+        <insert tableName="towns">
+            <column name="name" value="Warszawa"/>
+        </insert>
+
+        <insert tableName="towns">
+            <column name="name" value="Kraków"/>
+        </insert>
+
+        <insert tableName="towns">
+            <column name="name" value="Wrocław"/>
+        </insert>
+
+        <insert tableName="towns">
+            <column name="name" value="Poznań"/>
+        </insert>
+
+        <insert tableName="towns">
+            <column name="name" value="Gdańsk"/>
+        </insert>
+
+        <insert tableName="keywords">
+            <column name="value" value="electronics"/>
+        </insert>
+
+        <insert tableName="keywords">
+            <column name="value" value="fashion"/>
+        </insert>
+
+        <insert tableName="keywords">
+            <column name="value" value="home"/>
+        </insert>
+
+        <insert tableName="keywords">
+            <column name="value" value="sports"/>
+        </insert>
+
+        <insert tableName="keywords">
+            <column name="value" value="automotive"/>
+        </insert>
+
+        <insert tableName="keywords">
+            <column name="value" value="garden"/>
+        </insert>
+
+        <insert tableName="keywords">
+            <column name="value" value="beauty"/>
+        </insert>
+
+        <insert tableName="keywords">
+            <column name="value" value="books"/>
+        </insert>
+
+        <insert tableName="keywords">
+            <column name="value" value="toys"/>
+        </insert>
+
+        <insert tableName="keywords">
+            <column name="value" value="sale"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
