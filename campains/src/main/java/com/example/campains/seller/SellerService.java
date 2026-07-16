@@ -1,0 +1,31 @@
+package com.example.campains.seller;
+
+import com.example.campains.common.ResourceNotFoundException;
+import com.example.campains.product.ProductDto;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
+@Service
+public class SellerService {
+    private final SellersRepository sellersRepository;
+    private final EmeraldAccountsRepository emeraldAccountsRepository;
+
+    public SellerService(SellersRepository sellersRepository,EmeraldAccountsRepository emeraldAccountsRepository) {
+        this.sellersRepository = sellersRepository;
+        this.emeraldAccountsRepository = emeraldAccountsRepository;
+    }
+
+    public SellerDto getSellerInfo(String sellerName) {
+        Optional<SellerEntity> sellerOpt = sellersRepository.findByName(sellerName);
+        if (sellerOpt.isEmpty()) {
+            throw new ResourceNotFoundException("Seller witn name " + sellerName + " does not exist");
+        }
+        SellerEntity seller = sellerOpt.get();
+        return new SellerDto(
+                seller.getName(),
+                seller.getEmeraldAccount().getFunds(),
+                seller.getProducts().stream().map(p -> new ProductDto(p.getName())).toList()
+                );
+    }
+}
