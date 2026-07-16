@@ -110,7 +110,7 @@ public class CampaignService {
         SellerEntity seller = getSellerEntityOrThrow(sellerName);
         ProductEntity product = getProductEntityOrThrow(productName,seller);
         CampaignEntity campaign = getCampaignEntityOrThrow(campaignName,product);
-        if(campaignRepository.findByNameAndProduct(campaignUpdateInfo.name(),product).isPresent()) {
+        if( !campaignName.equals(campaignUpdateInfo.name() )&& campaignRepository.findByNameAndProduct(campaignUpdateInfo.name(),product).isPresent()) {
             throw new ResourceAlreadyExistsException("Name of the campain " + campaignUpdateInfo.name() +" is taken");
         }
         TownEntity town =
