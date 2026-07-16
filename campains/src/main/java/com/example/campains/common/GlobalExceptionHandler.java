@@ -1,5 +1,6 @@
 package com.example.campains.common;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -84,6 +85,27 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 "Internal server error",
                 "INTERNAL_ERROR",
                 "An unexpected server error occurred.",
+                request
+        );
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Object> handleConstraintViolationException(
+            ConstraintViolationException exception,
+            WebRequest request
+    ) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                "One or more request parameters are invalid."
+        );
+
+        problemDetail.setTitle("Validation failed");
+        problemDetail.setProperty("code", "VALIDATION_ERROR");
+
+        return createResponseEntity(
+                problemDetail,
+                new HttpHeaders(),
+                HttpStatus.BAD_REQUEST,
                 request
         );
     }

@@ -49,7 +49,7 @@ public class CampaignService {
         this.keywordRepository = keywordRepository;
         this.emeraldAccountsRepository = emeraldAccountsRepository;
     }
-
+    @Transactional(readOnly = true)
     public CampaignDto getCampaign(String campaignName,String sellerName,String productName) {
         SellerEntity seller = getSellerEntityOrThrow(sellerName);
         ProductEntity product = getProductEntityOrThrow(productName,seller);

@@ -3,6 +3,7 @@ package com.example.campains.seller;
 import com.example.campains.common.ResourceNotFoundException;
 import com.example.campains.product.ProductDto;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -15,7 +16,7 @@ public class SellerService {
         this.sellersRepository = sellersRepository;
         this.emeraldAccountsRepository = emeraldAccountsRepository;
     }
-
+    @Transactional(readOnly = true)
     public SellerDto getSellerInfo(String sellerName) {
         Optional<SellerEntity> sellerOpt = sellersRepository.findByName(sellerName);
         if (sellerOpt.isEmpty()) {

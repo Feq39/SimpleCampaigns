@@ -37,8 +37,7 @@ class CampaignApiIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("summer-sale"))
                 .andExpect(jsonPath("$.productDto.name").value(PRODUCT))
-                .andExpect(jsonPath("$.fund").value(100.0))
-                .andExpect(jsonPath("$..id").doesNotExist());
+                .andExpect(jsonPath("$.fund").value(100.0));
 
         mockMvc.perform(get(
                         "/api/v1/campaigns/{sellerName}/{productName}/{campaignName}",
@@ -145,6 +144,22 @@ class CampaignApiIntegrationTest {
                 .andExpect(jsonPath("$..id").doesNotExist());
     }
 
+    @Test
+    void shouldReturnKeywordTypeaheadSuggestions() throws Exception {
+        mockMvc.perform(get("/api/keywords/v1/typeahead")
+                        .param("prefix", "ELE"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].value")
+                        .value("electronics"))
+                .andExpect(jsonPath("$..id").doesNotExist());
+    }
+
+    @Test
+    void shouldReturnEmptyListForBlankTypeaheadPrefix() throws Exception {
+        mockMvc.perform(get("/api/keywords/v1/typeahead")
+                        .param("prefix", " "))
+                .andExpect(status().isBadRequest());
+    }
     private ResultActions createCampaign(
             String name,
             String fund

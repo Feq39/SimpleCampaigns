@@ -9,4 +9,7 @@ import java.util.Optional;
 @Repository
 public interface KeywordRepository extends JpaRepository<KeywordEntity,Long> {
     Optional<KeywordEntity> findByValue(String value);
+    List<KeywordEntity> findTop10ByValueStartingWithIgnoreCaseOrderByValueAsc(
+            String prefix
+    );
 }

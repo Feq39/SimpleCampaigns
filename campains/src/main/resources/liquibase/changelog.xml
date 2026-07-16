@@ -233,4 +233,15 @@
         </insert>
     </changeSet>
 
+    <changeSet id="3-domain-integrity-fixes" author="konrad">
+        <addUniqueConstraint
+                tableName="products"
+                columnNames="seller_id, name"
+                constraintName="uq_products_seller_name"/>
+
+        <addUniqueConstraint
+                tableName="campaigns"
+                columnNames="product_id, name"
+                constraintName="uq_campaigns_product_name"/>
+    </changeSet>
 </databaseChangeLog>

@@ -19,6 +19,7 @@ public record UpdateCampaignRequest(
 
         @NotNull
         @Positive
+        @DecimalMin("0.01")
         BigDecimal fund,
 
         @NotNull

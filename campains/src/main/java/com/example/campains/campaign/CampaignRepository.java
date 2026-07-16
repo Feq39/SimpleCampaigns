@@ -8,5 +8,13 @@ import java.util.Optional;
 
 @Repository
 public interface CampaignRepository extends JpaRepository<CampaignEntity,Long> {
-    public Optional<CampaignEntity> findByNameAndProduct(String name, ProductEntity product);
+    Optional<CampaignEntity> findByNameAndProduct(
+            String name,
+            ProductEntity product
+    );
+
+    boolean existsByNameAndProduct(
+            String name,
+            ProductEntity product
+    );
 }
